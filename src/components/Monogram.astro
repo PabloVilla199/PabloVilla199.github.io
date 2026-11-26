@@ -1,0 +1,77 @@
+---
+/**
+ * Monograma «PV» (Pablo Villa). Sustituye este componente cuando el diseño definitivo esté confirmado:
+ * el resto del sitio solo lo usa a través de <Monogram />. El favicon (public/favicon.svg) repite esta
+ * geometría con colores en hex.
+ *
+ * Geometría (rejilla 48 × 48, tesela tipo icono de archivo): la P en color texto y la V en --color-accent.
+ * El marcado es la forma final. Con `animated`, motion.ts traza las letras una vez (data-mono-*).
+ */
+interface Props {
+  /** Tamaño en CSS (p. ej. "1.75rem", "9rem"). */
+  size?: string;
+  /** Activa los ganchos de animación (solo el monograma grande de la portada). */
+  animated?: boolean;
+  /** Texto alternativo; si se omite, el monograma es decorativo (aria-hidden). */
+  label?: string;
+  class?: string;
+}
+const { size = '2rem', animated = false, label, class: className } = Astro.props;
+const a = animated ? '' : undefined;
+---
+<svg
+  class:list={['monogram', className]}
+  viewBox="0 0 48 48"
+  width="48"
+  height="48"
+  style={`--mono-size: ${size}`}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  data-mono-anim={a}
+>
+  <rect class="monogram__tile" x="1" y="1" width="46" height="46" rx="10" />
+  <g class="monogram__letters" transform="translate(-0.5 0)">
+    <path class="monogram__ink" d="M12 37 V11" data-mono-stroke={a} />
+    <path class="monogram__ink" d="M12 11 H17 A6.5 6.5 0 0 1 17 24 H12" data-mono-stroke={a} />
+    <path class="monogram__accent" d="M26 11 L31.5 37" data-mono-stroke={a} />
+    <path class="monogram__accent" d="M31.5 37 L37 11" data-mono-stroke={a} />
+  </g>
+</svg>
+
+<style>
+  .monogram {
+    display: block;
+    flex: none;
+    width: var(--mono-size);
+    height: var(--mono-size);
+    overflow: visible;
+  }
+
+  .monogram__tile {
+    fill: var(--color-surface);
+    stroke: var(--color-rule);
+    stroke-width: 1.5;
+  }
+
+  .monogram__ink,
+  .monogram__accent {
+    fill: none;
+    stroke-width: 3.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .monogram__ink {
+    stroke: var(--color-text);
+  }
+
+  .monogram__accent {
+    stroke: var(--color-accent);
+  }
+
+  .monogram__dot {
+    fill: var(--color-accent);
+  }
+</style>

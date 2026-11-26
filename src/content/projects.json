@@ -1,0 +1,215 @@
+[
+  {
+    "id": "mih",
+    "title": {
+      "es": "Sistema de información del MIH",
+      "en": "MIH Information System"
+    },
+    "summary": {
+      "es": "Recuperación y evolución del sistema web del Museo de Informática Histórica de la Universidad de Zaragoza.",
+      "en": "Recovery and modernization of the University of Zaragoza’s Museum of Computing History web system."
+    },
+    "context": {
+      "es": "El museo necesitaba seguir usando una aplicación Java heredada y mejorar tareas de catalogación e impresión que ya formaban parte de su trabajo diario.",
+      "en": "The museum needed to keep using a legacy Java application while improving everyday cataloging and printing tasks."
+    },
+    "work": [
+      {
+        "es": "Recuperé el código fuente a partir del artefacto desplegado y contrasté la recompilación con las clases en producción.",
+        "en": "I recovered the source code from the deployed artifact and compared the recompiled classes with those running in production."
+      },
+      {
+        "es": "Revisé la seguridad y la deuda técnica, corregí problemas y amplié las pruebas del sistema.",
+        "en": "I reviewed security and technical debt, fixed issues, and expanded the system’s test suite."
+      },
+      {
+        "es": "Desarrollé un sistema asistido para registrar donaciones. También amplié el editor de carteles para incorporar imágenes y mejoré las listas de impresión y la generación de PDF.",
+        "en": "I developed a tool to assist with recording donations. I also added image support to the sign editor and improved print lists and PDF generation."
+      }
+    ],
+    "stack": [
+      "Java 8",
+      "JSP",
+      "Servlets",
+      "Tomcat",
+      "MySQL"
+    ],
+    "links": [
+      {
+        "kind": "publicWebsite",
+        "url": "http://eolo.cps.unizar.es:4040/MIH/index.html"
+      }
+    ],
+    "featured": true,
+    "image": {
+      "src": "../assets/projects/mih-web.png",
+      "alt": {
+        "es": "Captura de la página de inicio del sistema web del Museo de Informática Histórica.",
+        "en": "Screenshot of the Museum of Computing History web system home page."
+      }
+    }
+  },
+  {
+    "id": "cita-previa",
+    "title": {
+      "es": "Luis Villa · Sistema de gestión de citas",
+      "en": "Luis Villa · Appointment Management System"
+    },
+    "summary": {
+      "es": "Aplicación de reservas en producción para una peluquería.",
+      "en": "Live booking application for a hair salon."
+    },
+    "context": {
+      "es": "La peluquería Luis Villa necesitaba un sistema web para gestionar las reservas de citas y simplificar su gestión interna.",
+      "en": "Luis Villa hair salon needed a web application to manage appointments and simplify day-to-day administration."
+    },
+    "work": [
+      {
+        "es": "Desarrollé y desplegué la aplicación de reservas.",
+        "en": "I developed and deployed the booking application."
+      },
+      {
+        "es": "Integré Twilio para automatizar los avisos de confirmación y cancelación.",
+        "en": "I integrated Twilio to automate confirmation and cancellation notifications."
+      },
+      {
+        "es": "Utilicé RabbitMQ para enviar los avisos de confirmación de cita.",
+        "en": "I used RabbitMQ to send appointment confirmation notifications."
+      }
+    ],
+    "stack": [
+      "PHP",
+      "RabbitMQ",
+      "Twilio"
+    ],
+    "links": [
+      {
+        "kind": "publicWebsite",
+        "url": "https://cita.luisvilla.es/index.php"
+      }
+    ],
+    "featured": true,
+    "image": {
+      "src": "../assets/projects/cita-previa-web.png",
+      "alt": {
+        "es": "Captura del primer paso de la reserva de citas de Luis Villa: selección del servicio.",
+        "en": "Screenshot of the first step of the Luis Villa booking flow: choosing a service."
+      }
+    }
+  },
+  {
+    "id": "reservada",
+    "title": {
+      "es": "ReservAda · Reservas universitarias",
+      "en": "ReservAda · University Bookings"
+    },
+    "summary": {
+      "es": "Backend para gestionar reservas de espacios universitarios.",
+      "en": "Backend for booking university spaces."
+    },
+    "highlight": {
+      "title": {
+        "es": "Arquitectura hexagonal",
+        "en": "Hexagonal architecture"
+      },
+      "body": {
+        "es": "Organicé el backend en NestJS y TypeScript con arquitectura hexagonal. Separé las reglas de negocio de los detalles del framework y de la persistencia. Entre esas reglas están la validación de aforo y el control de acceso basado en roles.",
+        "en": "I structured the NestJS and TypeScript backend using hexagonal architecture. I separated business rules from the framework and persistence details. Those rules include capacity validation and role-based access control."
+      }
+    },
+    "context": {
+      "es": "La plataforma debía admitir distintos perfiles de usuario y comprobar las condiciones de reserva de cada espacio.",
+      "en": "The platform needed to support different user roles and enforce booking rules for each space."
+    },
+    "work": [],
+    "stack": [
+      "TypeScript",
+      "NestJS",
+      "DDD",
+      "RBAC"
+    ],
+    "links": [
+      {
+        "kind": "source",
+        "url": "https://github.com/UNIZAR-30249-2026-ReservAda"
+      }
+    ],
+    "featured": false,
+    "image": null
+  },
+  {
+    "id": "dreamyurl",
+    "title": "DreamyURL",
+    "summary": {
+      "es": "Acortador de URL con validación asíncrona y estadísticas de uso.",
+      "en": "URL shortener with asynchronous validation and usage statistics."
+    },
+    "context": {
+      "es": "DreamyURL parte de una función sencilla: acortar enlaces. El objetivo del proyecto era usar ese caso para aplicar técnicas de rendimiento. Utilicé RabbitMQ para validar las URL en segundo plano, sin bloquear la creación del enlace corto, y Redis para registrar estadísticas de acceso y almacenar en caché datos como los códigos QR generados para compartir los enlaces.",
+      "en": "DreamyURL starts with a simple feature: shortening links. The goal was to use that feature to explore performance techniques. I used RabbitMQ to validate URLs in the background without blocking short-link creation, and Redis to record visit statistics and cache data such as the QR codes generated for sharing links."
+    },
+    "work": [
+      {
+        "es": "Trabajé en el servicio con Kotlin y Spring Boot.",
+        "en": "I worked on the service in Kotlin and Spring Boot."
+      }
+    ],
+    "stack": [
+      "Kotlin",
+      "Spring Boot",
+      "RabbitMQ",
+      "Redis"
+    ],
+    "links": [
+      {
+        "kind": "source",
+        "url": "https://github.com/PabloVilla199/DreamyURL-"
+      }
+    ],
+    "featured": false,
+    "image": null
+  },
+  {
+    "id": "bidfinder",
+    "title": "BidFinder",
+    "summary": {
+      "es": "Plataforma en equipo para explorar subastas del BOE a partir de datos estructurados.",
+      "en": "Team-built platform for exploring Spanish Official State Gazette auctions using structured data."
+    },
+    "highlight": {
+      "title": {
+        "es": "Extracción de datos del BOE",
+        "en": "Data extraction from the Spanish Official State Gazette"
+      },
+      "body": {
+        "es": "Colaboré en el desarrollo de la plataforma y en la integración de procesamiento de lenguaje natural para extraer información de las subastas del BOE. Los datos extraídos se estructuraban para consultarlos desde la aplicación.",
+        "en": "I contributed to developing the platform and integrating natural language processing to extract information from auctions published in the Spanish Official State Gazette. The extracted data was structured for browsing in the application."
+      }
+    },
+    "context": {
+      "es": "La información de las subastas combina datos publicados en XML y descripciones en texto libre.",
+      "en": "Auction information combines published XML data with free-text descriptions."
+    },
+    "work": [
+      {
+        "es": "Colaboré en la automatización de la clasificación de activos y el análisis de riesgos.",
+        "en": "I helped automate asset classification and risk analysis."
+      }
+    ],
+    "stack": [
+      "MongoDB",
+      "Express",
+      "React",
+      "Node.js",
+      "NLP"
+    ],
+    "links": [
+      {
+        "kind": "source",
+        "url": "https://github.com/UNIZAR-30256-2025-BFINDER/Bid-Finder_Backend"
+      }
+    ],
+    "featured": false,
+    "image": null
+  }
+]

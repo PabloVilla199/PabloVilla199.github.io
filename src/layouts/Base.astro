@@ -1,0 +1,79 @@
+---
+/** Documento común: <head>, barra superior, pie con contacto, panel lateral y scripts (todas las páginas). */
+import '../styles/global.css';
+import type { CollectionEntry } from 'astro:content';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContactPanel from '../components/ContactPanel.astro';
+import { assetUrl, otherLang, type Lang, type SectionKey } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  profile: CollectionEntry<'profile'>['data'];
+  title: string;
+  description: string;
+  /** URL de esta misma página en cada idioma (control de idioma y hreflang). */
+  paths: Record<Lang, string>;
+  current?: SectionKey;
+}
+const { lang, profile, title, description, paths, current } = Astro.props;
+const abs = (p: string) => new URL(p, Astro.site).toString();
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#18332f" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href={assetUrl('/favicon.svg')} type="image/svg+xml" />
+    <link rel="canonical" href={abs(paths[lang])} />
+    <link rel="alternate" hreflang="es" href={abs(paths.es)} />
+    <link rel="alternate" hreflang="en" href={abs(paths.en)} />
+    <link rel="alternate" hreflang="x-default" href={abs(paths.es)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_GB'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <!--
+      Prepara la construcción del monograma solo si hay JS y no se pide movimiento reducido.
+      Sin JS (o si el módulo falla) se ve directamente el monograma final.
+    -->
+    <script is:inline>
+      // «sketch-pending»: el dibujo de Zaragoza espera vacío a su script (máx. 2,5 s; sin JS se ve completo).
+      document.documentElement.classList.add('js', 'sketch-pending');
+      setTimeout(function () { document.documentElement.classList.remove('sketch-pending'); }, 2500);
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]motion=/.test(location.search)) {
+        var r = document.documentElement;
+        r.classList.add('motion-intro');
+        setTimeout(function () { r.classList.remove('motion-intro'); }, 2500);
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+    <Header lang={lang} wordmark={profile.name} current={current} switchHref={paths[otherLang(lang)]} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} profile={profile} />
+    <ContactPanel lang={lang} profile={profile} />
+    <script>
+      import '../scripts/ui';
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .motion-intro [data-mono-anim] {
+    visibility: hidden;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

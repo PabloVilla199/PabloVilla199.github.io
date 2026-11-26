@@ -1,0 +1,29 @@
+---
+/** Portada en un idioma: Sobre mí, Experiencia, Proyectos (destacados) y Contacto (pie). */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Experience from '../components/Experience.astro';
+import ProjectWorkspace from '../components/ProjectWorkspace.astro';
+import { getExperience, getProfile, getProjects, pickFeatured } from '../lib/content';
+import { homeUrl, t, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const profile = await getProfile();
+const experience = await getExperience();
+const projects = await getProjects();
+const featured = pickFeatured(projects);
+---
+<Base
+  lang={lang}
+  profile={profile}
+  title={profile.name + ui[lang].titleSep + t(profile.headline, lang)}
+  description={t(profile.bio, lang)}
+  paths={{ es: homeUrl('es'), en: homeUrl('en') }}
+>
+  <Hero lang={lang} profile={profile} />
+  <Experience lang={lang} items={experience} />
+  {featured.length > 0 && <ProjectWorkspace lang={lang} items={projects} open={featured} />}
+</Base>

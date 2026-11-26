@@ -1,0 +1,252 @@
+---
+/**
+ * Barra superior tipo editor: marca, pestañas de sección, control de idioma y «Contacto» a la derecha.
+ * La pestaña activa la marca src/scripts/ui.ts según la sección visible (o `current`).
+ */
+import Monogram from './Monogram.astro';
+import { homeUrl, otherLang, sectionIds, ui, type Lang, type SectionKey } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  wordmark: string;
+  /** Pestaña activa fija (p. ej. en las fichas de proyecto). */
+  current?: SectionKey;
+  /** URL de esta misma página en el otro idioma. */
+  switchHref: string;
+}
+const { lang, wordmark, current, switchHref } = Astro.props;
+const s = ui[lang];
+const target = otherLang(lang);
+const tabs = (['about', 'experience', 'projects'] as const).map((key) => ({ key, id: sectionIds[lang][key], label: s.nav[key] }));
+// Iconos de línea decorativos (fuera del nombre accesible): archivo, historial y carpeta.
+const tabIcons: Record<(typeof tabs)[number]['key'], string> = {
+  about: 'M4 1.75h5.25L12.5 5v9.25h-8.5zM9.25 1.75V5h3.25M6.25 8h4M6.25 10.75h4',
+  experience: 'M2.6 8a5.4 5.4 0 1 0 1.6-3.85M2.25 2v2.75H5M8 5v3.25l2.25 1.5',
+  projects: 'M1.75 4.25v8.5h12.5V5.5H7.5L6 3.75H1.75z',
+};
+// Correspondencia de anclas para conservar la sección al cambiar de idioma (#experiencia → #experience).
+const hashMap = Object.fromEntries(
+  (Object.keys(sectionIds[lang]) as SectionKey[]).map((k) => [sectionIds[lang][k], sectionIds[target][k]]),
+);
+---
+<header class="bar">
+  <div class="bar__inner page">
+    <a class="brand" href={homeUrl(lang)} aria-label={`${wordmark}, ${s.homeLabel.toLowerCase()}`}>
+      <Monogram size="1.875rem" />
+      <span class="brand__name">{wordmark}</span>
+    </a>
+
+    <nav class="tabs" aria-label={s.navLabel}>
+      <ul>
+        {tabs.map((tab) => (
+          <li>
+            <a class="tab mono" href={homeUrl(lang, tab.key)} data-tab={tab.id} data-active={current === tab.key ? '' : undefined}>
+              <svg class="tab__icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+                <path d={tabIcons[tab.key]} fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>{tab.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="bar__actions">
+      <a
+        class="bar__lang mono"
+        href={switchHref}
+        hreflang={target}
+        lang={target}
+        aria-label={ui[target].switchLabel}
+        data-lang-switch
+        data-hash-map={JSON.stringify(hashMap)}
+      >
+        {ui[target].langName}
+      </a>
+      <!-- Sin JS: enlace al contacto del pie. Con JS: botón que abre el panel lateral. -->
+      <a class="bar__contact mono" href={`#${sectionIds[lang].contact}`} data-contact-fallback>{s.nav.contact}</a>
+      <button type="button" class="bar__contact mono" data-contact-open aria-haspopup="dialog" aria-controls="contact-panel" aria-expanded="false" hidden>
+        {s.nav.contact}
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-surface);
+    border-bottom: var(--rule);
+  }
+
+  .bar__inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'brand tabs actions';
+    align-items: stretch;
+    column-gap: var(--space-6);
+    min-height: var(--bar-h);
+  }
+
+  .brand {
+    grid-area: brand;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .brand__name {
+    font-size: 1.0625rem;
+    font-style: italic;
+    font-variation-settings: 'opsz' 24;
+    white-space: nowrap;
+  }
+
+  .tabs {
+    grid-area: tabs;
+    display: flex;
+    min-width: 0;
+  }
+
+  .tabs ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 100%;
+    min-height: 2.75rem;
+    padding-inline: var(--space-4);
+    color: var(--color-text-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    border-inline-end: var(--rule);
+  }
+
+  .tabs li:first-child .tab {
+    border-inline-start: var(--rule);
+  }
+
+  .tab:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .tab:focus-visible,
+  .bar__contact:focus-visible,
+  .bar__lang:focus-visible {
+    outline-offset: -4px;
+  }
+
+  /* Pestaña activa: fondo de página y filete de acento arriba, como un archivo abierto */
+  .tab__icon {
+    flex: none;
+    opacity: 0.85;
+  }
+
+  /* Pestaña activa en verde azulado, con su indicador arriba */
+  .tab[data-active] {
+    background: var(--color-bg);
+    color: var(--color-accent);
+    box-shadow: inset 0 2px 0 var(--color-accent);
+  }
+
+  .bar__actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .bar__lang,
+  .bar__contact {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: var(--space-3);
+    text-decoration: none;
+  }
+
+  .bar__lang {
+    color: var(--color-text-soft);
+  }
+
+  .bar__lang:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  .bar__contact {
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-rule);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--color-accent);
+    cursor: pointer;
+  }
+
+  .bar__contact:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent-strong);
+  }
+
+  .bar__contact[hidden] {
+    display: none;
+  }
+
+  /* Móvil: marca, idioma y contacto arriba; pestañas debajo */
+  @media (max-width: 47.99rem) {
+    .bar__inner {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        'brand actions'
+        'tabs tabs';
+      row-gap: var(--space-1);
+      padding-top: var(--space-2);
+    }
+
+    .tabs {
+      margin-inline: calc(var(--page-gutter) * -1);
+      padding-inline: var(--page-gutter);
+      border-top: var(--rule);
+    }
+
+    .tabs li:first-child .tab {
+      border-inline-start: 0;
+    }
+
+    .tab {
+      gap: 0.35rem;
+      padding-inline: 0.5rem;
+    }
+
+    .bar__contact {
+      min-height: 2.5rem;
+    }
+  }
+
+  /* Pantallas estrechas: la marca queda en el monograma (el nombre sigue en el nombre accesible) */
+  @media (max-width: 30rem) {
+    .brand__name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  }
+</style>

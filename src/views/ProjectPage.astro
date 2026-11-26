@@ -1,0 +1,26 @@
+---
+/** Ficha de un proyecto en un idioma. La misma ficha existe en /es/proyectos/<id>/ y /en/projects/<id>/. */
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectWorkspace from '../components/ProjectWorkspace.astro';
+import { getProfile, getProjects } from '../lib/content';
+import { projectUrl, t, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  project: CollectionEntry<'projects'>;
+}
+const { lang, project } = Astro.props;
+const profile = await getProfile();
+const projects = await getProjects();
+---
+<Base
+  lang={lang}
+  profile={profile}
+  title={t(project.data.title, lang) + ui[lang].titleSep + profile.name}
+  description={t(project.data.summary, lang)}
+  paths={{ es: projectUrl('es', project.id), en: projectUrl('en', project.id) }}
+  current="projects"
+>
+  <ProjectWorkspace lang={lang} items={projects} open={[project]} isDetail />
+</Base>

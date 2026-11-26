@@ -1,0 +1,88 @@
+---
+/**
+ * Lista de tecnologías (src/data/tech.ts). Con icono: solo el icono, con el nombre en un rótulo al pasar el
+ * puntero y para lectores de pantalla. Sin icono disponible: el nombre en texto.
+ */
+import { techIcon } from '../data/tech';
+
+interface Props {
+  items: string[];
+  label: string;
+}
+const { items, label } = Astro.props;
+---
+{items.length > 0 && (
+  <ul class="tech" aria-label={label}>
+    {items.map((name) => {
+      const icon = techIcon(name);
+      return (
+        <li class:list={['tech__item', { 'tech__item--icon': icon }]} data-tip={icon ? name : undefined}>
+          {icon && (
+            <svg class="tech__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" style={icon.color ? `color: ${icon.color}` : undefined}>
+              <path d={icon.path} fill="currentColor" fill-rule={icon.evenOdd ? 'evenodd' : undefined} />
+            </svg>
+          )}
+          <span class:list={{ 'visually-hidden': icon }}>{name}</span>
+        </li>
+      );
+    })}
+  </ul>
+)}
+
+<style>
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-soft);
+  }
+
+  .tech__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .tech__icon {
+    flex: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--color-text);
+  }
+
+  /* Rótulo con el nombre al pasar el puntero */
+  .tech__item--icon {
+    position: relative;
+    cursor: default;
+  }
+
+  .tech__item--icon::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: var(--color-surface);
+    border: var(--rule);
+    color: var(--color-text);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 2px);
+    transition: opacity var(--motion-fast) ease, transform var(--motion-fast) ease;
+  }
+
+  .tech__item--icon:hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+</style>

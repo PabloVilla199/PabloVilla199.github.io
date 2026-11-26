@@ -1,0 +1,66 @@
+---
+/**
+ * Apartado Proyectos: explorador estrecho + fichas abiertas.
+ * En la portada abre los proyectos destacados (fichas compactas); en la página de un proyecto, su ficha completa.
+ * En móvil el índice queda encima de las fichas.
+ */
+import type { CollectionEntry } from 'astro:content';
+import ProjectExplorer from './ProjectExplorer.astro';
+import ProjectSheet from './ProjectSheet.astro';
+import { sectionIds, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  items: CollectionEntry<'projects'>[];
+  open: CollectionEntry<'projects'>[];
+  isDetail?: boolean;
+}
+const { lang, items, open, isDetail = false } = Astro.props;
+const TitleTag = isDetail ? 'p' : 'h2';
+---
+<section
+  class:list={['section page workspace', { 'workspace--detail': isDetail }]}
+  id={sectionIds[lang].projects}
+  aria-labelledby="projects-title"
+>
+  <div class="workspace__side">
+    <TitleTag class="section__title workspace__title" id="projects-title">{ui[lang].nav.projects}</TitleTag>
+    <ProjectExplorer lang={lang} items={items} openIds={open.map((p) => p.id)} isDetail={isDetail} />
+  </div>
+  <div class="workspace__sheets">
+    {open.map((project) => <ProjectSheet lang={lang} project={project} variant={isDetail ? 'full' : 'compact'} />)}
+  </div>
+</section>
+
+<style>
+  .workspace--detail {
+    padding-top: var(--space-7);
+  }
+
+  .workspace__side {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .workspace__sheets {
+    display: grid;
+    gap: var(--space-6);
+    min-width: 0;
+    align-content: start;
+  }
+
+  @media (min-width: 56rem) {
+    .workspace__side {
+      position: sticky;
+      top: calc(var(--bar-h) + var(--space-5));
+      align-self: start;
+    }
+
+    /* el título ya va dentro del bloque fijo */
+    .workspace__title {
+      position: static;
+    }
+  }
+</style>

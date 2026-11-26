@@ -1,0 +1,39 @@
+{
+  "name": "Pablo Villa Camañes",
+  "initials": "PV",
+  "location": {
+    "es": "Zaragoza, España",
+    "en": "Zaragoza, Spain"
+  },
+  "headline": {
+    "es": "Ingeniería de software y datos",
+    "en": "Software and Data Engineering"
+  },
+  "bio": {
+    "es": "Me interesa el desarrollo backend y el procesamiento de datos. Diseño aplicaciones que puedan crecer y sean fáciles de mantener. Disfruto tanto modernizando sistemas legados como construyendo aplicaciones de alto rendimiento.",
+    "en": "I’m interested in backend development and data processing. I design applications that can scale and are easy to maintain. I enjoy modernizing legacy systems and building high-performance applications."
+  },
+  "education": {
+    "degree": {
+      "es": "Grado en Ingeniería Informática",
+      "en": "Degree in Computer Engineering"
+    },
+    "specialization": {
+      "es": "Mención en Ingeniería del Software",
+      "en": "Specialization in Software Engineering"
+    },
+    "institution": {
+      "es": "Universidad de Zaragoza · EINA",
+      "en": "University of Zaragoza · EINA"
+    },
+    "grade": {
+      "es": "7,5",
+      "en": "7.5"
+    }
+  },
+  "links": {
+    "github": "https://github.com/PabloVilla199",
+    "linkedin": "https://www.linkedin.com/in/pablo-villa-cama%C3%B1es-31829a31b/",
+    "email": "pablovillacamanes@gmail.com"
+  }
+}

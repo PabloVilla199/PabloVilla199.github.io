@@ -1,0 +1,53 @@
+[
+  {
+    "id": "omterra",
+    "organization": "Siemens Gamesa (Omterra, antes Siemens Energy)",
+    "organizationDisplay": {
+      "es": "Siemens Gamesa · Omterra (antes Siemens Energy)",
+      "en": "Siemens Gamesa · Omterra (formerly Siemens Energy)"
+    },
+    "role": {
+      "es": "Becario de análisis de datos",
+      "en": "Data Analyst Intern"
+    },
+    "start": "2026-08",
+    "end": null,
+    "contributions": [],
+    "logo": {
+      "src": "../assets/logos/siemens-energy.svg",
+      "label": "Siemens Energy"
+    },
+    "summary": {
+      "es": "Trabajo como becario en el área de tecnología de Siemens Gamesa, donde desarrollo y mantengo un informe de Power BI. También colaboro con otro equipo en una pipeline ETL que extrae datos de documentos PDF y los prepara para su carga en una base de datos.",
+      "en": "I’m an intern in the technology area at Siemens Gamesa, where I develop and maintain a Power BI report. I also work with another team on an ETL pipeline that extracts data from PDF documents and prepares it for loading into a database."
+    }
+  },
+  {
+    "id": "mih",
+    "organization": {
+      "es": "Museo de Informática Histórica · Universidad de Zaragoza",
+      "en": "Museum of Computing History · University of Zaragoza"
+    },
+    "role": {
+      "es": "Prácticas de desarrollo de software · Proyecto de grado",
+      "en": "Software Development Intern · Capstone Project"
+    },
+    "start": "2026-02",
+    "end": "2026-06",
+    "projectId": "mih",
+    "contributions": [
+      {
+        "es": "Trabajé en la recuperación, revisión y evolución del sistema web del museo.",
+        "en": "I worked on recovering, reviewing, and extending the museum’s web information system."
+      },
+      {
+        "es": "Desarrollé mejoras para registrar donaciones y preparar carteles y listas de impresión.",
+        "en": "I developed improvements for recording donations and preparing exhibit signs and print lists."
+      }
+    ],
+    "logo": {
+      "src": "../assets/logos/eina-unizar.svg",
+      "label": "EINA · Universidad de Zaragoza"
+    }
+  }
+]

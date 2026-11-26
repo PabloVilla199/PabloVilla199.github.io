@@ -1,0 +1,162 @@
+---
+/** Experiencia: fechas en una columna estrecha y contenido al lado (apilado en móvil). */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { formatRange } from '../lib/format';
+import { projectUrl, sectionIds, t, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  items: CollectionEntry<'experience'>[];
+}
+const { lang, items } = Astro.props;
+const s = ui[lang];
+---
+<section class="section page" id={sectionIds[lang].experience} aria-labelledby="experience-title">
+  <h2 class="section__title" id="experience-title">{s.nav.experience}</h2>
+  <ol class="section__body xp" role="list">
+    {items.map(({ data }) => {
+      const range = formatRange(data.start, data.end, lang);
+      const org = t(data.organizationDisplay ?? data.organization, lang);
+      return (
+        <li class="xp__item">
+          <div class="xp__aside">
+            <p class="meta xp__dates">
+              <time datetime={data.start}>{range.start}</time>
+              <span aria-hidden="true">–</span>
+              <span class="visually-hidden">{s.until}</span>
+              {data.end ? <time datetime={data.end}>{range.end}</time> : <span>{range.end}</span>}
+              {data.location && <span class="xp__location">{t(data.location, lang)}</span>}
+            </p>
+            {data.logo && (
+              <span class="xp__logo">
+                <Image src={data.logo.src} alt="" height={64} />
+              </span>
+            )}
+          </div>
+          <div class="xp__content">
+            <h3 class="xp__role">{t(data.role, lang)}</h3>
+            <p class="xp__company mono">{org}</p>
+            {data.summary && <p class="prose xp__summary">{t(data.summary, lang)}</p>}
+            {data.contributions.length > 0 && (
+              <ul class="prose xp__contributions">
+                {data.contributions.map((c) => <li>{t(c, lang)}</li>)}
+              </ul>
+            )}
+            {data.projectId && (
+              <p class="link-list xp__project">
+                <a href={projectUrl(lang, data.projectId.id)}>{s.openProject}</a>
+              </p>
+            )}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+</section>
+
+<style>
+  .xp {
+    display: grid;
+    gap: var(--space-7);
+    padding: 0;
+    list-style: none;
+  }
+
+  .xp__item {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  /* Logotipo bajo las fechas: proporción original, placa clara mínima (los dos logos son oscuros). */
+  .xp__logo {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    margin-top: var(--space-1);
+    padding: 6px 10px;
+    border-radius: 2px;
+    background: var(--color-text);
+  }
+
+  .xp__logo :global(img) {
+    display: block;
+    width: auto;
+    height: 2.4rem;
+    max-width: 10.5rem;
+    object-fit: contain;
+  }
+
+  /* Columna de fechas: el periodo y, debajo, el logo de la organización */
+  .xp__aside {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    justify-self: start;
+    width: max-content;
+    max-width: 100%;
+    gap: var(--space-4);
+  }
+
+  .xp__dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-self: start;
+    align-content: flex-start;
+    column-gap: 0.35em;
+    white-space: nowrap;
+  }
+
+  .xp__location {
+    flex-basis: 100%;
+  }
+
+  .xp__role {
+    font-size: var(--text-h3);
+    font-variation-settings: 'opsz' 28;
+  }
+
+  .xp__company {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-top: var(--space-2);
+    color: var(--color-text-soft);
+    white-space: normal;
+  }
+
+  .xp__summary {
+    margin-top: var(--space-3);
+  }
+
+  .xp__contributions {
+    margin-top: var(--space-3);
+    padding-left: 1.1em;
+    color: var(--color-text-soft);
+  }
+
+  .xp__contributions li + li {
+    margin-top: var(--space-2);
+  }
+
+  .xp__contributions li::marker {
+    color: var(--color-accent);
+  }
+
+  .xp__project {
+    margin-top: var(--space-2);
+  }
+
+  /* Escritorio: columna estrecha para fechas y otra para el contenido */
+  @media (min-width: 40rem) {
+    .xp__item {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      column-gap: var(--space-6);
+    }
+
+    .xp__aside {
+      padding-top: 0.55em; /* alinea las fechas con la primera línea del puesto */
+    }
+  }
+</style>

@@ -1,0 +1,199 @@
+---
+/** Portada (Sobre mí): monograma + nombre + perfil visibles desde el primer momento, presentación e ilustración. */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import ZaragozaScene from './ZaragozaScene.astro';
+import Monogram from './Monogram.astro';
+import { sectionIds, t, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  profile: CollectionEntry<'profile'>['data'];
+}
+const { lang, profile } = Astro.props;
+const s = ui[lang];
+const edu = profile.education;
+---
+<section class="hero page" id={sectionIds[lang].about} aria-labelledby="hero-name">
+  <div class="hero__top">
+    <div class="hero__lockup">
+      <Monogram size="var(--mono-hero)" animated class="hero__mono" />
+      <div class="hero__id">
+        <h1 class="hero__name" id="hero-name">{profile.name}</h1>
+        <p class="hero__headline mono">{t(profile.headline, lang)}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__text">
+    <p class="lead hero__lead">{t(profile.bio, lang)}</p>
+    {profile.location && <p class="meta hero__location">{t(profile.location, lang)}</p>}
+
+    {edu && (
+      <section class="education" aria-labelledby="education-title">
+        <h2 class="education__label mono" id="education-title">{s.education}</h2>
+        <p class="education__degree">{t(edu.degree, lang)}</p>
+        {edu.specialization && <p class="education__line">{t(edu.specialization, lang)}</p>}
+        <p class="education__line">{t(edu.institution, lang)}</p>
+        {edu.grade && (
+          <p class="education__grade">
+            <span class="mono">{s.gradeLabel}</span>
+            <strong>{t(edu.grade, lang)}</strong>
+          </p>
+        )}
+      </section>
+    )}
+    {profile.photo && (
+      <figure class="hero__photo">
+        <div class="figure__media">
+          <Image src={profile.photo.src} alt={t(profile.photo.alt, lang)} widths={[240, 360, 480]} sizes="12rem" loading="eager" />
+        </div>
+        {profile.photo.caption && <figcaption class="figure__caption">{t(profile.photo.caption, lang)}</figcaption>}
+      </figure>
+    )}
+  </div>
+
+  <div class="hero__figure">
+    <ZaragozaScene lang={lang} />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--space-7);
+    padding-top: var(--space-7);
+  }
+
+  /* Monograma + nombre + perfil, uno al lado del otro desde el primer momento */
+  .hero__lockup {
+    --mono-hero: clamp(2.75rem, 1.8rem + 2.6vw, 4.75rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+  }
+
+  .hero__id {
+    min-width: 0;
+  }
+
+  /* Nombre en una sola línea, tan grande como quepa */
+  .hero__name {
+    font-size: clamp(1.6rem, 0.4rem + 6vw, 6rem);
+    white-space: nowrap;
+    line-height: var(--leading-tight);
+    font-weight: 340;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.02em;
+    hyphens: manual;
+  }
+
+  .hero__headline {
+    margin-top: var(--space-3);
+    color: var(--color-accent);
+    font-size: var(--text-sm);
+  }
+
+  .hero__lead {
+    margin-top: 0;
+  }
+
+  .hero__location {
+    margin-top: var(--space-4);
+  }
+
+  /* Estudios: bloque propio, separado de la presentación */
+  .education {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-7);
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    max-width: 30rem;
+    border: var(--rule);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    border-radius: 4px;
+  }
+
+  .education__label {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+
+  .education__degree {
+    font-size: var(--text-h3);
+    line-height: var(--leading-heading);
+    font-variation-settings: 'opsz' 28;
+    color: var(--color-text);
+  }
+
+  .education__line {
+    color: var(--color-text-soft);
+  }
+
+  /* Nota centrada en el bloque */
+  .education__grade {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--rule);
+  }
+
+  .education__grade .mono {
+    color: var(--color-text-soft);
+  }
+
+  .education__grade strong {
+    font-size: var(--text-lead);
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .hero__photo {
+    margin-top: var(--space-6);
+    max-width: 12rem;
+  }
+
+  .hero__photo .figure__media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .hero__figure {
+    align-self: center;
+    width: 100%;
+  }
+
+  .hero {
+    grid-template-areas: 'top' 'text' 'figure';
+  }
+
+  .hero__top {
+    grid-area: top;
+    min-width: 0;
+  }
+
+  .hero__text {
+    grid-area: text;
+  }
+
+  .hero__figure {
+    grid-area: figure;
+  }
+
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      grid-template-areas:
+        'top top'
+        'text figure';
+      column-gap: var(--space-8);
+      row-gap: var(--space-7);
+      align-items: start;
+      padding-top: var(--space-7);
+    }
+  }
+</style>

@@ -1,0 +1,72 @@
+# Despliegue en GitHub Pages (guía oficial: https://docs.astro.build/en/guides/deploy/github/)
+# - push a main o lanzamiento manual: valida (astro check), compila y publica.
+# - pull requests: solo validación y compilación, sin desplegar.
+# Requisito único en GitHub: Settings → Pages → Source → GitHub Actions.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Pull requests: comprobaciones y compilación estática, sin publicar nada.
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install (clean, from lockfile)
+        run: npm ci
+      - name: Check and build (astro check + astro build)
+        run: npm run build
+        # Para un repositorio de proyecto (p. ej. «portfolio»), descomenta:
+        # env:
+        #   BASE_PATH: /portfolio
+
+  # push a main / manual: instala desde el lockfile, ejecuta `npm run build` (incluye astro check) y sube el artefacto.
+  build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v7
+      - name: Install, build, and upload your site
+        uses: withastro/action@v6
+        with:
+          node-version: 24
+        # Para un repositorio de proyecto (p. ej. «portfolio»), descomenta:
+        # env:
+        #   BASE_PATH: /portfolio
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

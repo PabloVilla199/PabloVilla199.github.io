@@ -1,0 +1,258 @@
+---
+/**
+ * «Zaragoza, trazo a trazo»: maqueta 3D lineal (Three.js + Anime.js, src/scripts/zaragoza-scene.ts).
+ * - La propia escena es el control (rol de botón, enfocable): clic/toque o Intro/Espacio dibujan la escena
+ *   completa (Ebro → Puente de Piedra → Pilar) y al final entra la firma. El siguiente clic
+ *   vuelve a dibujar. Arrastrar orbita la cámara; con el foco, las flechas izquierda/derecha la giran.
+ * - Antes de empezar se muestra una invitación discreta («Haz clic para dibujar» / «Toca para dibujar»).
+ * - Sin JavaScript o sin WebGL se muestra la versión estática: el mismo dibujo proyectado en SVG, con firma.
+ * Datos de la maqueta: src/data/zaragoza3d.ts.
+ */
+import { PARTS, SIGNATURE, VIEW, project, signatureAnchor, type Polyline } from '../data/zaragoza3d';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = ui[lang].scene;
+
+// Versión estática: proyección del encuadre inicial.
+const toPoints = (line: Polyline) => line.map((v) => project(v).join(',')).join(' ');
+const staticLines = PARTS.flatMap((part) => [
+  ...part.lines.map((l) => ({ tone: part.tone, points: toPoints(l) })),
+  ...(part.faintLines ?? []).map((l) => ({ tone: 'faint' as const, points: toPoints(l) })),
+]);
+const allPoints = PARTS.flatMap((p) => [...p.lines, ...(p.faintLines ?? [])]).flat().map((v) => project(v));
+const sig = project(signatureAnchor(VIEW.azimuth));
+const xs = allPoints.map((p) => p[0]);
+const ys = [...allPoints.map((p) => p[1]), sig[1] + 0.85];
+const pad = 0.35;
+const minX = Math.min(...xs) - pad;
+const minY = Math.min(...ys) - pad;
+const viewBox = [minX, minY, Math.max(...xs) - minX + pad, Math.max(...ys) - minY + pad].map((n) => n.toFixed(2)).join(' ');
+
+const labels = {
+  drawing: s.drawing,
+  done: s.done,
+  ariaStart: s.ariaStart,
+  ariaDone: s.ariaDone,
+  parts: PARTS.map((p) => p.name[lang]),
+};
+---
+<figure class="scene" data-scene data-labels={JSON.stringify(labels)} aria-labelledby="scene-title">
+  <figcaption class="scene__city" id="scene-title" data-scene-title>{s.title}</figcaption>
+  <!-- El script convierte el área en control (role="button", tabindex, aria-label) cuando el visor está listo. -->
+  <div class="scene__stage" data-scene-stage data-action={s.action}>
+    <!-- Versión estática (sin JS o sin WebGL) -->
+    <svg class="scene__static" viewBox={viewBox} role="img" aria-label={s.ariaDone} data-scene-static>
+      {staticLines.map((l) => <polyline class={`scene__line scene__line--${l.tone}`} points={l.points} />)}
+      <text class="scene__static-signature" x={sig[0]} y={sig[1] + 0.6} text-anchor="middle">{SIGNATURE}</text>
+    </svg>
+    <!-- Visor 3D: el script inserta aquí el canvas -->
+    <div class="scene__canvas" data-scene-canvas></div>
+    <span class="scene__signature" aria-hidden="true" data-scene-signature><span data-scene-signature-inner>{SIGNATURE}</span></span>
+    <!-- Invitación inicial: el texto cambia según el tipo de puntero (CSS) -->
+    <span class="scene__invite mono" aria-hidden="true" data-scene-invite>
+      <span class="scene__pulse"></span>
+      <span class="scene__invite-click">{s.inviteClick}</span>
+      <span class="scene__invite-tap">{s.inviteTap}</span>
+    </span>
+  </div>
+
+  <p class="visually-hidden" id="scene-help">{s.label}</p>
+  <p class="visually-hidden" id="scene-desc" aria-live="polite" data-scene-progress>{s.ariaStart}</p>
+
+</figure>
+
+<script>
+  import '../scripts/zaragoza-scene';
+</script>
+
+<style>
+  .scene {
+    display: grid;
+    gap: var(--space-2);
+    width: 100%;
+  }
+
+  /* Sin marco ni fondo propio: la escena se funde con la portada. */
+  .scene__stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+  }
+
+  .scene[data-ready] .scene__stage {
+    cursor: pointer;
+  }
+
+  .scene__stage:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  .scene__static {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scene__line {
+    fill: none;
+    stroke-width: 0.03;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .scene__line--main {
+    stroke: var(--color-accent);
+  }
+
+  .scene__line--soft {
+    stroke: var(--color-text-soft);
+  }
+
+  .scene__line--faint {
+    stroke: var(--color-accent);
+    stroke-opacity: 0.4;
+  }
+
+  .scene__static-signature {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.42px;
+    fill: var(--color-text);
+  }
+
+  .scene__canvas {
+    position: absolute;
+    inset: 0;
+    display: none;
+    /* El gesto vertical sigue desplazando la página; el horizontal orbita la cámara. */
+    touch-action: pan-y;
+    cursor: grab;
+  }
+
+  .scene__canvas:active {
+    cursor: grabbing;
+  }
+
+  .scene__canvas :global(canvas) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Firma anclada a la maqueta (el script la coloca proyectando un punto 3D) */
+  .scene__signature {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: var(--text-h3);
+    font-style: italic;
+    font-variation-settings: 'opsz' 36;
+    color: var(--color-text);
+    will-change: transform;
+  }
+
+  .scene__signature > span {
+    display: inline-block;
+    opacity: 0;
+  }
+
+  /* Visor listo: se oculta la versión estática */
+  .scene[data-ready] .scene__static {
+    display: none;
+  }
+
+  .scene[data-ready] .scene__canvas,
+  .scene[data-ready] .scene__signature {
+    display: block;
+  }
+
+  :global(.sketch-pending) .scene:not([data-fallback]) .scene__static {
+    visibility: hidden;
+  }
+
+  /* Invitación: discreta, dentro de la escena; desaparece al empezar a dibujar. */
+  .scene__invite {
+    position: absolute;
+    left: 50%;
+    bottom: 12%;
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+    color: var(--color-text);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .scene[data-ready]:not([data-started]) .scene__invite {
+    display: inline-flex;
+  }
+
+  .scene__pulse {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scene__pulse::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--color-accent);
+      animation: scene-pulse 1.6s ease-out infinite;
+    }
+  }
+
+  @keyframes scene-pulse {
+    from { transform: scale(1); opacity: 0.6; }
+    to { transform: scale(3); opacity: 0; }
+  }
+
+  .scene__invite-tap {
+    display: none;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .scene__invite-click {
+      display: none;
+    }
+    .scene__invite-tap {
+      display: inline;
+    }
+  }
+
+  /* «Zaragoza»: mismo estilo editorial que el nombre de la portada, en verde azulado */
+  .scene__city {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 1.2rem + 3.2vw, 4rem);
+    line-height: var(--leading-tight);
+    font-weight: 340;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+    text-align: center;
+  }
+
+  /* Con el visor, «Zaragoza» aparece al final de la secuencia (después de la firma). */
+  :global(.js) .scene:not([data-fallback]) .scene__city {
+    opacity: 0;
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+/** Índice estrecho tipo explorador de archivos: una entrada por proyecto (id + resumen), generada desde los datos. */
+import type { CollectionEntry } from 'astro:content';
+import { projectUrl, t, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  items: CollectionEntry<'projects'>[];
+  /** ids de los proyectos abiertos en el área de fichas */
+  openIds?: string[];
+  /** true si la página actual ES la ficha del proyecto abierto (aria-current="page") */
+  isDetail?: boolean;
+}
+const { lang, items, openIds = [], isDetail = false } = Astro.props;
+const s = ui[lang];
+---
+<nav class="explorer" aria-label={s.explorerLabel}>
+  <p class="explorer__root mono">
+    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M1.5 4.5v8h13v-6.5h-7l-1.5-1.5z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" /></svg>
+    {s.explorerRoot}
+  </p>
+  <ul role="list">
+    {items.map(({ id, data: p }) => {
+      const open = openIds.includes(id);
+      return (
+        <li>
+          <a
+            class="explorer__item"
+            href={projectUrl(lang, id)}
+            aria-current={open && isDetail ? 'page' : undefined}
+            data-open={open ? '' : undefined}
+          >
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z M9.5 1.5v3h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" /></svg>
+            <span class="explorer__text">
+              <span class="explorer__name mono">{id}</span>
+              <span class="visually-hidden">: {t(p.title, lang)}.</span>
+              <span class="explorer__summary">{t(p.summary, lang)}</span>
+            </span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  .explorer {
+    border: var(--rule);
+    border-radius: 4px;
+    background: var(--color-surface);
+    padding-block: var(--space-2);
+  }
+
+  .explorer__root {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: var(--color-text-soft);
+  }
+
+  .explorer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .explorer__item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-5);
+    color: var(--color-text-soft);
+    text-decoration: none;
+  }
+
+  .explorer__item svg {
+    flex: none;
+    margin-top: 0.15em;
+  }
+
+  .explorer__text {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .explorer__name {
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  .explorer__summary {
+    font-size: var(--text-xs);
+    line-height: 1.45;
+  }
+
+  .explorer__item:hover {
+    color: var(--color-text);
+    background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  }
+
+  .explorer__item:hover .explorer__name {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .explorer__item:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .explorer__item[data-open] {
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .explorer__item[data-open] svg {
+    color: var(--color-accent);
+  }
+
+  .explorer__item[data-open]::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--color-accent);
+  }
+</style>
