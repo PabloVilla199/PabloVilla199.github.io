@@ -91,13 +91,14 @@ Paleta oscura de verde petróleo con acento verde azulado (inspirado en VS Code)
   barras de nivel técnico ni etiquetas de relleno. Las listas de tecnologías se escriben como frase.
 - Todos los valores salen de `tokens.css`; no escribir colores ni tamaños sueltos en componentes.
 - **Marca:** monograma «PV» en `Monogram.astro` (único punto de cambio; `public/favicon.svg` repite la geometría
-  en hex): P en color texto y V en verde azulado, en una tesela tipo icono de archivo. Revisar en grande y a
+  en hex sobre una tesela oscura): logotipo relleno con P angulosa en color texto (punta afilada abajo a la
+  izquierda) y V en verde azulado con forma de marca de verificación, sin tesela. Revisar en grande y a
   tamaño de icono (16–30 px) antes de cambiarlo.
 - **Portada:** fila superior a todo el ancho con el monograma pequeño y el nombre en UNA línea (tan grande como
   quepa, `white-space: nowrap`) + perfil; debajo, a la izquierda presentación y Estudios; a la derecha
   «Zaragoza» (mismo estilo editorial que el nombre, en verde azulado, centrado) sobre la maqueta 3D.
 - Historial: v0.1 Newsreader + marfil/cobalto; v0.2 Literata + verde petróleo; v0.3 navegación de editor + mono;
-  v0.4 monograma como marca; v0.5 contenido real, bilingüe es/en, monograma PVC; v0.6 maqueta 3D, PV.
+  v0.4 monograma como marca; v0.5 contenido real, bilingüe es/en, monograma PVC; v0.6 maqueta 3D, PV; v0.7 logotipo PV relleno.
 
 ## Navegación y contacto
 

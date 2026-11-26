@@ -1,11 +1,12 @@
 ---
 /**
- * Monograma «PV» (Pablo Villa). Sustituye este componente cuando el diseño definitivo esté confirmado:
- * el resto del sitio solo lo usa a través de <Monogram />. El favicon (public/favicon.svg) repite esta
- * geometría con colores en hex.
+ * Logotipo «PV» (Pablo Villa): P angulosa en color texto con la punta afilada hacia abajo a la izquierda y
+ * V en --color-accent con forma de marca de verificación, encajada bajo la panza de la P.
+ * El resto del sitio solo lo usa a través de <Monogram />. El favicon (public/favicon.svg) repite esta
+ * geometría con colores en hex, sobre una tesela oscura para que se vea en pestañas claras.
  *
- * Geometría (rejilla 48 × 48, tesela tipo icono de archivo): la P en color texto y la V en --color-accent.
- * El marcado es la forma final. Con `animated`, motion.ts traza las letras una vez (data-mono-*).
+ * Coordenadas de la imagen original (1254 × 1254); el viewBox recorta un cuadrado con un margen moderado.
+ * El marcado es la forma final. Con `animated`, motion.ts hace entrar las dos piezas una vez (data-mono-piece).
  */
 interface Props {
   /** Tamaño en CSS (p. ej. "1.75rem", "9rem"). */
@@ -21,7 +22,7 @@ const a = animated ? '' : undefined;
 ---
 <svg
   class:list={['monogram', className]}
-  viewBox="0 0 48 48"
+  viewBox="150 110 1013 1013"
   width="48"
   height="48"
   style={`--mono-size: ${size}`}
@@ -31,13 +32,13 @@ const a = animated ? '' : undefined;
   focusable="false"
   data-mono-anim={a}
 >
-  <rect class="monogram__tile" x="1" y="1" width="46" height="46" rx="10" />
-  <g class="monogram__letters" transform="translate(-0.5 0)">
-    <path class="monogram__ink" d="M12 37 V11" data-mono-stroke={a} />
-    <path class="monogram__ink" d="M12 11 H17 A6.5 6.5 0 0 1 17 24 H12" data-mono-stroke={a} />
-    <path class="monogram__accent" d="M26 11 L31.5 37" data-mono-stroke={a} />
-    <path class="monogram__accent" d="M31.5 37 L37 11" data-mono-stroke={a} />
-  </g>
+  <path
+    class="monogram__ink"
+    fill-rule="evenodd"
+    d="M447 202H975L763 497L497 557L190 1005Z M565 297H790L735 380Q712 418 683 425L478 462L553 312Q558 298 565 297Z"
+    data-mono-piece={a}
+  />
+  <path class="monogram__accent" d="M518 572L687 797L923 485H1123L690 1030L428 696Z" data-mono-piece={a} />
 </svg>
 
 <style>
@@ -49,29 +50,11 @@ const a = animated ? '' : undefined;
     overflow: visible;
   }
 
-  .monogram__tile {
-    fill: var(--color-surface);
-    stroke: var(--color-rule);
-    stroke-width: 1.5;
-  }
-
-  .monogram__ink,
-  .monogram__accent {
-    fill: none;
-    stroke-width: 3.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
   .monogram__ink {
-    stroke: var(--color-text);
+    fill: var(--color-text);
   }
 
   .monogram__accent {
-    stroke: var(--color-accent);
-  }
-
-  .monogram__dot {
     fill: var(--color-accent);
   }
 </style>
