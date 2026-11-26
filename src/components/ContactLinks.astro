@@ -1,7 +1,9 @@
 ---
 /**
  * Enlaces de contacto: fila centrada de iconos de marca con su nombre debajo (GitHub · LinkedIn · Gmail).
- * Todo el bloque (icono + nombre) es el enlace; no se muestran URLs ni la dirección de correo.
+ * Todo el bloque (icono + nombre) es el enlace y se abre en una pestaña nueva; no se muestran URLs ni la
+ * dirección de correo. Gmail abre la pantalla de redactar de Gmail con la dirección ya puesta (un enlace
+ * mailto: depende de que el visitante tenga un cliente de correo configurado).
  * Solo aparecen los enlaces configurados en profile.json. La usan el pie y el panel lateral.
  */
 import type { CollectionEntry } from 'astro:content';
@@ -14,19 +16,24 @@ interface Props {
 }
 const { lang, links } = Astro.props;
 const labels = ui[lang].contactLabels;
+const newTab = ui[lang].newTab;
 
 const items: { icon: 'github' | 'linkedin' | 'gmail'; label: string; href: string }[] = [];
 if (links.github) items.push({ icon: 'github', label: labels.github, href: links.github });
 if (links.linkedin) items.push({ icon: 'linkedin', label: labels.linkedin, href: links.linkedin });
-if (links.email) items.push({ icon: 'gmail', label: labels.email, href: `mailto:${links.email}` });
+if (links.email) {
+  const compose = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(links.email)}`;
+  items.push({ icon: 'gmail', label: labels.email, href: compose });
+}
 ---
 {items.length > 0 && (
   <ul class="contact-icons">
     {items.map((l) => (
       <li>
-        <a class="contact-icons__link" href={l.href} rel={l.href.startsWith('http') ? 'me' : undefined}>
+        <a class="contact-icons__link" href={l.href} target="_blank" rel={l.icon === 'gmail' ? 'noopener noreferrer' : 'me noopener noreferrer'}>
           <Icon name={l.icon} size={28} />
           <span class="contact-icons__name mono">{l.label}</span>
+          <span class="visually-hidden">{newTab}</span>
         </a>
       </li>
     ))}
